@@ -100,11 +100,21 @@ public class AnagramDictionary {
                 }
             }
         }
-        Log.e("************",Arrays.toString(result.toArray()));
         return result;
     }
 
     public String pickGoodStarterWord() {
-        return "post";
+
+        int r = (int)(Math.random() * wordList.size());
+        String startingWord = wordList.get(r);
+
+        Log.e("*********initial starting word",startingWord);
+        while (getAnagramsWithOneMoreLetter(startingWord).size() < MIN_NUM_ANAGRAMS) {
+            startingWord = wordList.get((int)(Math.random() * wordList.size()));
+        }
+
+        Log.e("********FINAL STARTING WORD", startingWord);
+
+        return startingWord;
     }
 }
