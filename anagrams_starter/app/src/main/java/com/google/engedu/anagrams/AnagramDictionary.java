@@ -36,15 +36,18 @@ public class AnagramDictionary {
     private ArrayList<String> wordList = new ArrayList<>();
     private HashMap <String, ArrayList> lettersToWord = new HashMap<>();
     private HashSet<String> wordSet = new HashSet<>();
+    private HashMap<Integer, String> sizeToWords = new HashMap<>();
 
     public AnagramDictionary(Reader reader) throws IOException {
         BufferedReader in = new BufferedReader(reader);
         String line;
+
         while((line = in.readLine()) != null) {
             String word = line.trim();
             if (!lettersToWord.containsKey(sortLetters(word))) {
                 lettersToWord.put(sortLetters(word), new ArrayList());
             }
+            wordSet.add(word);
             wordList.add(word);
 
         }
@@ -55,7 +58,7 @@ public class AnagramDictionary {
             return false;
         }
 
-        if (wordList.contains(word)){
+        if (wordSet.contains(word)){
             return true;
         } else {
             return false;
