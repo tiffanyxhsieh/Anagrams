@@ -36,7 +36,8 @@ public class AnagramDictionary {
     private ArrayList<String> wordList = new ArrayList<>();
     private HashMap <String, ArrayList> lettersToWord = new HashMap<>();
     private HashSet<String> wordSet = new HashSet<>();
-    private HashMap<Integer, String> sizeToWords = new HashMap<>();
+    private HashMap<Integer,ArrayList> sizeToWords = new HashMap<>();
+    int wordLength = DEFAULT_WORD_LENGTH;
 
     public AnagramDictionary(Reader reader) throws IOException {
         BufferedReader in = new BufferedReader(reader);
@@ -47,18 +48,30 @@ public class AnagramDictionary {
             if (!lettersToWord.containsKey(sortLetters(word))) {
                 lettersToWord.put(sortLetters(word), new ArrayList());
             }
+
+            if (!sizeToWords.containsKey(word.length())) {
+                sizeToWords.put(word.length(), new ArrayList());
+            } else {
+                ArrayList<String> arr = sizeToWords.get(word.length());
+                arr.add(word);
+                sizeToWords.put(word.length(), arr);
+            }
+
+
             wordSet.add(word);
             wordList.add(word);
-
         }
+        Log.e("****4 length", sizeToWords.get(4).toString());
+
     }
 
     public boolean isGoodWord(String word, String base) {
-        if (word.contains(base)) {
-            return false;
-        }
+
 
         if (wordSet.contains(word)){
+            if (word.contains(base)) {
+                return false;
+            }
             return true;
         } else {
             return false;
@@ -86,6 +99,7 @@ public class AnagramDictionary {
         return result;
     }
 
+    //TODO: fix method...doesn't find all possible anagrams
     public List<String> getAnagramsWithOneMoreLetter(String word) {
         List<String> originalAnagrams = getAnagrams(word);
         ArrayList<String> result = new ArrayList<String>();
@@ -108,15 +122,18 @@ public class AnagramDictionary {
 
     public String pickGoodStarterWord() {
 
-        int r = (int)(Math.random() * wordList.size());
-        String startingWord = wordList.get(r);
+        int numPossibleWords = sizeToWords.get(wordLength).size();
+        int r = (int)(Math.random() * numPossibleWords);
 
+        String startingWord = sizeToWords.get(wordLength).get(r).toString();
         Log.e("*********initial starting word",startingWord);
         while (getAnagramsWithOneMoreLetter(startingWord).size() < MIN_NUM_ANAGRAMS) {
-            startingWord = wordList.get((int)(Math.random() * wordList.size()));
+            startingWord = sizeToWords.get(wordLength).get((int)(Math.random() * numPossibleWords)).toString();
         }
 
         Log.e("********FINAL STARTING WORD", startingWord);
+
+        wordLength++;
 
         return startingWord;
     }
