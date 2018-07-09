@@ -61,7 +61,6 @@ public class AnagramDictionary {
             wordSet.add(word);
             wordList.add(word);
         }
-        Log.e("****4 length", sizeToWords.get(4).toString());
 
     }
 
@@ -92,24 +91,40 @@ public class AnagramDictionary {
         ArrayList<String> result = new ArrayList<String>();
         String alphTargetWord = sortLetters(targetWord);
         for (String s: wordList) {
-            if (s.length() == targetWord.length() && sortLetters(targetWord).equals(sortLetters(s))) {
+            if (s.length() == targetWord.length() && alphTargetWord.equals(sortLetters(s))) {
                 result.add(s);
             }
         }
         return result;
     }
 
+    public static List<String> permutation(String str) {
+        List<String> permutations = new ArrayList<>();
+        permutation("", str,permutations);
+        return permutations;
+    }
+
+    private static void permutation(String prefix, String str, List<String> p) {
+        int n = str.length();
+        if (n == 0) p.add(prefix);
+        else {
+            for (int i = 0; i < n; i++)
+                permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n),p);
+        }
+    }
+
     //TODO: fix method...doesn't find all possible anagrams
     public List<String> getAnagramsWithOneMoreLetter(String word) {
-        List<String> originalAnagrams = getAnagrams(word);
+        List<String> originalWordPermutations = permutation(word);
+        Log.e("original anagram", originalWordPermutations.toString());
         ArrayList<String> result = new ArrayList<String>();
-        for (String s: originalAnagrams) {
+        for (String s: originalWordPermutations) {
             int length = s.length();
             StringBuilder anagram = new StringBuilder(s);
             for (int i = 0; i < length; i++) {
                 for (char letter = 'a'; letter <= 'z'; letter++) {
                     String anagramWithLetter = anagram.insert(i, letter).toString();
-                    if (wordList.contains(anagramWithLetter)) {
+                    if (wordList.contains(anagramWithLetter) && isGoodWord(anagramWithLetter,word)) {
                         result.add(anagramWithLetter);
                     }
                     anagram = new StringBuilder((s));
@@ -127,13 +142,16 @@ public class AnagramDictionary {
 
         String startingWord = sizeToWords.get(wordLength).get(r).toString();
         Log.e("*********initial starting word",startingWord);
+        Log.e("anagrams w/ one more letter", getAnagramsWithOneMoreLetter(startingWord).toString());
         while (getAnagramsWithOneMoreLetter(startingWord).size() < MIN_NUM_ANAGRAMS) {
             startingWord = sizeToWords.get(wordLength).get((int)(Math.random() * numPossibleWords)).toString();
         }
 
         Log.e("********FINAL STARTING WORD", startingWord);
 
-        wordLength++;
+        if (wordLength < MAX_WORD_LENGTH) {
+            wordLength++;
+        }
 
         return startingWord;
     }
